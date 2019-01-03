@@ -34,13 +34,27 @@ We demonstrate the use of recurrent neural nets (RNNs) for classifying leptons i
 
 \section{Introduction}\label{sec:intro}
 
-[WHY LEPTON ISOLATION IS IMPORTANT, WHAT ANALYSES IT'S USED IN, ETC]
+% why lepton isolation is important, what analyses it's used in etc
 
-[EXISTING TECHNIQUES, PTCONE, PLT, ETC]
+In high energy physics experiments at the Large Hadron Collider (LHC), we shoot protons at each other at nearly the speed of light, and each resulting collision causes a spray of particles to be produced. By analyzing a large number of these collisions with specialized detectors, we can work out the physics of what happened in these events.
 
-[USE OF MACHINE LEARNING IN HEP, AND WHY RNN WOULD BE USEFUL]
+These collisions often produce particles called leptons, which include electrons, muons, and their antimatter partners. For many physics analyses, we're interested in knowing whether each lepton was produced during the initial collision (prompt lepton), or whether it came into being slightly afterwards, when a heavier particle such as a b-quark decayed into lighter particles (heavy-flavor lepton).
 
-The codebase used in this project can be found at github.com/BucketOfFish/LeptonIsolation. Training is performed with PyTorch.
+When leptons come from quark decay, they are often surrounded by a shower of other particles when they reach the detector. Thus, we often use lepton-isolation algorithms to determine whether leptons are prompt or heavy-flavor (HF).
+
+% existing techniques - PLT, ptcone etc.
+
+Common algorithms for determining lepton isolation include ptcone and its variants such as ptvarcone. This algorithm simply draws a cone around each lepton - with the collision point as the vertex of the cone - and adds up the energy of all the other stuff inside that cone. If the ratio of lepton energy vs. non-lepton energy inside that cone is below a certain threshold, the lepton is marked as non-isolated (and thus as having come from a heavy decay). The size of the cone and cutoff threshold may vary with lepton energy and other factors, but for the most part the ptcone class of algorithms describe a simple sum and ratio.
+
+There have also been investigations into other sorts of algorithms, such as the Prompt Lepton Tagger tool (PLT). The PLT algorithm calculates a set of features for each lepton, and uses these features to train a boosted decision tree (BDT). The results have been shown to outperform ptcone.
+
+% why RNN would be useful
+
+In this paper we demonstrate a further improvement upon lepton isolation algorithms, with the use of a recurrent neural net (RNN) evaluated on full track and calorimeter information for all particles surrounding a lepton. Rather than using a simple sum-and-ratio technique, or performing cut-based analysis on a small number of calculated features, we use a machine-learning algorithm to analyze all available information in an event in order to perform the best classification possible.
+
+In Section~\ref{sec:selection}, we explain how we chose training and test events to use with our RNN, including what filtering and cleaning steps events had to pass. Section~\ref{sec:dataprep} includes technical details on data preparation, explaining how to prepare detector data and get it into a form usable for our studies. Section~\ref{sec:architecture} shows our investigations into the best architecture for our problem, and demonstrates how we decided on our final RNN architecture. Finally, results are shown in Section~\ref{sec:results}, comparing RNN results with ptcone and PLT.
+
+The codebase used in this project can be found on GitHub at github.com/ BucketOfFish/LeptonIsolation. All training is performed with PyTorch.
 
 \section{Event Selection}\label{sec:selection}
 
@@ -58,9 +72,11 @@ Electrons were selected using the “DFCommonElectronsLHMedium” decorator, and
 
 For each lepton, we stored the following information: pdgID, pT, eta, phi, d0, z0, ptcone(20/30/40), ptvarcone(20/30/40), and truthType. pdgID and truthType were truth information, specifying the lepton flavor (electron vs. muon) and lepton isolation (heavy flavor vs. prompt) respectively. For tracks, we stored dR, dEta, dPhi, dd0, dz0, charge, eta, pT, theta, d0, z0, and chiSquared. dR, dEta, etc. for each track were calculated with respect to the track's associated lepton.
 
+\subsection{Feature Comparisons}
+
 [FEATURE COMPARISONS]
 
-\section{Ptcone Validation}\label{sec:ptcone}
+\subsection{Ptcone Validation}
 
 [HOW PTCONE IS CALCULATED]
 
