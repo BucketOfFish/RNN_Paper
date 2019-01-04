@@ -1,0 +1,50 @@
+\section{Data Preparation}\label{sec:dataprep}
+
+\subsection{Event Generation}
+
+The data used in this project was extracted from collision events generated via Monte Carlo algorithms at CERN. These generated events contain all the same information as real events gathered via detectors, and are stored in the same format.
+
+% ttbar events
+
+For this project we decided to generate 100,000 ttbar-process events. In these events, a proton-proton collision creates a very energetic gluon, which decays into a top quark and an antitop quark. The top quark then quickly decays, almost always into a W boson and a bottom quark. In about one-third of cases, the W boson then decays into an antilepton and its associated neutrino. The antitop quark goes through the corresponding antimatter decay chain. Thus, the final product of the ttbar process contains either zero, one, or two heavy-flavor leptons (or antileptons) along with a shower of other particles. Any bottom quarks coming from the ttbar decay may further decay into more leptons, but these are identifiable by their displaced point of origin, since the bottom quark is long-lived, and moves a bit away from the collision point before decaying.
+
+Prompt leptons are produced via short-lived processes at the point of collision. Production of these leptons are not specific to the ttbar process~\cite{ref:prompt}, and they may be present in an event along with heavy-flavor leptons.
+
+It must be noted here that in this analysis, leptons and their antipartners are treated identically. That is, an electron and positron are classified identically, and a muon is classified identically to an antimuon.
+
+% To be specific, we used the sample $mc16_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_MUON5.e6337_e5984_s3126_r10201_r10210_p3584$.
+
+\subsection{Lepton-Track Association}
+
+% lepton and associated track extraction and selection
+
+Each collision event could thus contain numerous leptons, along with many thousands of particle tracks left in the detector. Each particle in the event can also leave energy deposits in the two calorimeters present in the detector. For our training and test data, we wanted to look at one lepton at a time, along with all the track and calorimeter data in some region around it.
+
+To do this, we first began with ROOT-format data, which contained all data from a collision. Going event by event, we saved information for the top 20 most energetic electrons per event, and the top 20 most energetic muons. For these leptons, we stored pdgID and truthType, which are truth information (lepton flavor - electron vs. muon - and lepton isolation - heavy flavor vs. prompt - respectively). We also stored pT, eta, phi, d0, and z0, which are energy and geometric variables assigned to the lepton by a particle reconstruction algorithm. Furthermore, we stored information for the 3000 most energetic tracks in each event. For tracks, we saved charge, eta, pT, theta, d0, z0, and chiSquared information. At the end, all this information was dumped into an H5-format file.
+
+Next, for each lepton we made a list of all tracks in that lepton's event which were within an eta-phi cone of 0.5. Using these tracks, for each lepton we calculated and stored ptcone, ptvarcone, and PLT values, in order to compare the performance of these algorithms against our RNN. For each track we also calculated dPhi, dEta, dR, dd0, and dz0. dEta is the difference in phi between the track and its associated lepton etc. These lepton-track groups were then stored in a pickle file, since the H5 format has difficulties with handling variable-sized lists.
+
+Leptons and tracks also had to pass quality cuts. Lepton objects were reconstructed by various algorithms from detector data, and tagged by the algorithms with reconstruction likelihoods. We chose electrons which contained the “DFCommonElectronsLHMedium” decorator, and muons which passed the MuonSelectionTool set at medium. Tracks were required to pass the same cuts used when calculating ptcone and ptvarcone~\cite{ref:run2isolation},~\cite{ref:trackingcp}. Furthermore, we only kept leptons which had at least one associated good track in the surrounding region.
+
+% electron selection
+% SG::AuxElement::ConstAccessor<char> cacc_lhmedium("DFCommonElectronsLHMedium");
+% if (!cacc_lhmedium(*electron)) continue;
+% muon selection
+% CP::MuonSelectionTool* m_muonSelectionTool;
+% xAOD::Muon::Quality muonQuality = m_muonSelectionTool->getQuality(*muon);
+% if (muonQuality < xAOD::Muon::Medium) continue;
+
+% good_track_pt = tracks['pT'] > 500  # 500 MeV
+% good_track_eta = abs(tracks['eta']) < 2.5
+% good_track_hits = [i + j >= 7 for i, j in zip(
+% tracks['nSCTHits'], tracks['nPixHits'])] and\
+% (tracks['nIBLHits'] > 0)
+% good_track_holes = [i + j <= 2 for i, j in zip(
+% tracks['nPixHoles'], tracks['nSCTHoles'])] and\
+% (tracks['nPixHoles'] <= 1)
+% good_tracks = tracks[good_track_pt & good_track_eta &
+% good_track_hits & good_track_holes]
+
+Finally, we balanced prompt and heavy-flavor classes, keeping an equal number of samples for each. After all selections were applied, we ended up extracting 8241 heavy flavor and 8241 isolated leptons, with their associated tracks.
+
+% From 100k events? Check if samples need to be remade.

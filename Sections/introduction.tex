@@ -1,0 +1,25 @@
+\section{Introduction}\label{sec:intro}
+
+% why lepton isolation is important, what analyses it's used in etc
+
+In high energy physics experiments at the Large Hadron Collider (LHC), we shoot protons at each other at nearly the speed of light, and each resulting collision causes a spray of particles to be produced. By analyzing a large number of these collisions with specialized detectors, we can work out the physics of what happened in these events.
+
+These collisions often produce particles called leptons, which include electrons, muons, and their antimatter partners. For many physics analyses, we're interested in knowing whether each lepton was produced during the initial collision (prompt lepton), or whether it came into being slightly afterwards, when a heavier particle such as a b-quark decayed into lighter particles (heavy-flavor lepton).
+
+When leptons come from quark decay, they are often surrounded by a shower of other particles when they reach the detector. Thus, we often use lepton-isolation algorithms to determine whether leptons are prompt or heavy-flavor.
+
+% existing techniques - PLT, ptcone etc.
+
+Common algorithms for determining lepton isolation include ptcone and its variants such as ptvarcone. This algorithm simply draws a cone around each lepton - with the collision point as the vertex of the cone - and adds up the energy of all the other stuff inside that cone. If the ratio of lepton energy vs. non-lepton energy inside that cone is below a certain threshold, the lepton is marked as non-isolated (and thus as having come from a heavy decay). The size of the cone and cutoff threshold may vary with lepton energy and other factors, but for the most part the ptcone class of algorithms describe a simple sum and ratio.
+
+There have also been investigations into other sorts of algorithms, such as the Prompt Lepton Tagger tool (PLT). The PLT algorithm calculates a set of features for each lepton, and uses these features to train a boosted decision tree (BDT). The results have been shown to outperform ptcone.
+
+% why RNN would be useful
+
+In this paper we demonstrate a further improvement upon lepton isolation algorithms, with the use of a recurrent neural net (RNN) evaluated on full track and calorimeter information for all particles surrounding a lepton. Rather than using a simple sum-and-ratio technique, or performing cut-based analysis on a small number of calculated features, we use a machine-learning algorithm to analyze all available information in an event in order to perform the best classification possible.
+
+% paper outline
+
+In Section~\ref{sec:dataprep}, we explain how we prepared training and test data to use with our RNN, including what filtering and cleaning steps samples had to pass, and technical details on data formatting. Section~\ref{sec:dataexamination} contains preliminary examinations, where we perform brief sanity checks concerning the contents of the data. Section~\ref{sec:architecture} shows our investigations into the best architecture for our problem, and demonstrates how we decided on our final RNN architecture. Finally, results are shown in Section~\ref{sec:results}, comparing RNN results with ptcone and PLT.
+
+The codebase used in this project can be found on GitHub at github.com/ BucketOfFish/LeptonIsolation. All training is performed with PyTorch.
