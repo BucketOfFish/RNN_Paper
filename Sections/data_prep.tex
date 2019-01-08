@@ -8,7 +8,7 @@ The data used in this project was extracted from collision events generated via 
 
 For this project we decided to generate 100,000 ttbar-process events. In these events, a proton-proton collision creates a very energetic gluon, which decays into a top quark and an antitop quark. The top quark then quickly decays, almost always into a W boson and a bottom quark. In about one-third of cases, the W boson then decays into an antilepton and its associated neutrino. The antitop quark goes through the corresponding antimatter decay chain. Thus, the final product of the ttbar process contains either zero, one, or two heavy-flavor leptons (or antileptons) along with a shower of other particles. Any bottom quarks coming from the ttbar decay may further decay into more leptons, but these are identifiable by their displaced point of origin, since the bottom quark is long-lived, and moves a bit away from the collision point before decaying.
 
-Prompt leptons are produced via short-lived processes at the point of collision. Production of these leptons are not specific to the ttbar process~\cite{ref:prompt}, and they may be present in an event along with heavy-flavor leptons.
+Prompt leptons are produced via short-lived processes at the point of collision. Production of these leptons are not specific to the ttbar process~\cite{bodek}, and they may be present in an event along with heavy-flavor leptons.
 
 It must be noted here that in this analysis, leptons and their antipartners are treated identically. That is, an electron and positron are classified identically, and a muon is classified identically to an antimuon.
 
@@ -24,7 +24,7 @@ To do this, we first began with ROOT-format data, which contained all data from 
 
 Next, for each lepton we made a list of all tracks in that lepton's event which were within an eta-phi cone of 0.5. Using these tracks, for each lepton we calculated and stored ptcone, ptvarcone, and PLT values, in order to compare the performance of these algorithms against our RNN. For each track we also calculated dPhi, dEta, dR, dd0, and dz0. dEta is the difference in phi between the track and its associated lepton etc. These lepton-track groups were then stored in a pickle file, since the H5 format has difficulties with handling variable-sized lists.
 
-Leptons and tracks also had to pass quality cuts. Lepton objects were reconstructed by various algorithms from detector data, and tagged by the algorithms with reconstruction likelihoods. We chose electrons which contained the “DFCommonElectronsLHMedium” decorator, and muons which passed the MuonSelectionTool set at medium. Tracks were required to pass the same cuts used when calculating ptcone and ptvarcone~\cite{ref:run2isolation},~\cite{ref:trackingcp}. Furthermore, we only kept leptons which had at least one associated good track in the surrounding region.
+Leptons and tracks also had to pass quality cuts. Lepton objects were reconstructed by various algorithms from detector data, and tagged by the algorithms with reconstruction likelihoods. We chose electrons which contained the “DFCommonElectronsLHMedium” decorator, and muons which passed the MuonSelectionTool set at medium. Tracks were required to pass the same cuts used when calculating ptcone and ptvarcone~\cite{run2isolation},~\cite{trackingcp}. Furthermore, we only kept leptons which had at least one associated good track in the surrounding region.
 
 % electron selection
 % SG::AuxElement::ConstAccessor<char> cacc_lhmedium("DFCommonElectronsLHMedium");
